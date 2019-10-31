@@ -10,6 +10,7 @@ import java.io.Reader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by LaunchCode
@@ -72,18 +73,45 @@ public class JobData {
 
         ArrayList<HashMap<String, String>> jobs = new ArrayList<>();
 
+
+
         for (HashMap<String, String> row : allJobs) {
 
-            String aValue = row.get(column);
+            String resultValue = row.get(column).toLowerCase();
 
-            if (aValue.contains(value)) {
+            if (resultValue.contains(value.toLowerCase())) {
                 jobs.add(row);
             }
         }
 
+        if (jobs.size() == 0) {
+            System.out.println("No results matching search term");
+        }
         return jobs;
+// end of findByColumnAndValue
     }
 
+    public static ArrayList<HashMap<String, String>> findByValue(String searchChoice) {
+        loadData();
+
+        ArrayList<HashMap<String, String>> specificJobs = new ArrayList<>();
+        ArrayList<HashMap<String, String>> specificJob = new ArrayList<>();
+
+        for(int i = 0; i < allJobs.size(); i++) {
+
+            for (Map.Entry<String, String> job : allJobs.get(i).entrySet()) {
+                //System.out.println(job.getKey() + ": " + job.getValue());
+                specificJob.addAll(findByColumnAndValue(job.getKey(), searchChoice));
+            }
+
+            if (!specificJob.isEmpty()) {
+                if (!specificJobs.containsAll(specificJob)) {
+                    specificJobs.addAll(specificJob);
+                }
+            }
+        }
+        return specificJobs;
+    }
     /**
      * Read in data from a CSV file and store it in a list
      */
@@ -123,6 +151,7 @@ public class JobData {
             System.out.println("Failed to load job data");
             e.printStackTrace();
         }
+// end of loadData
     }
-
+// end of class
 }
